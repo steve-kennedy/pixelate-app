@@ -1,38 +1,171 @@
 .App {
+  height: 100vh;
+  background-color: #1a202c;
+  overflow: scroll;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.container {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 0 30px 0 30px;
+}
+
+.authed-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}
+
+.header {
+  margin: 0;
+  font-size: 50px;
+  font-weight: bold;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.sub-text {
+  font-size: 25px;
+  color: white;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.gradient-text {
+  background: -webkit-linear-gradient(left, #60c657 30%, #35aee2 60%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cta-button {
+  height: 45px;
+  border: 0;
+  width: auto;
+  padding-left: 40px;
+  padding-right: 40px;
+  margin: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+.connect-wallet-button {
+  background: -webkit-linear-gradient(left, #60c657, #35aee2);
+  background-size: 200% 200%;
+  animation: gradient-animation 4s ease infinite;
+}
+
+.get-wallet-button {
+  background: -webkit-linear-gradient(left, #4e44ce, #1a202c);
+  background-size: 200% 200%;
+  animation: gradient-animation 4s ease infinite;
+}
+
+.submit-image-button {
+  background: -webkit-linear-gradient(left, #60c657, #35aee2);
+  background-size: 200% 200%;
+  animation: gradient-animation 4s ease infinite;
+}
+
+.dropzone {
+  background-color: grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  padding: 50px;
+  cursor: pointer;
+  border: 2px dashed darkgray;
+  outline: none;
+  font-size: 20px;
+  color: darkgray;
+}
+
+.dropzone-reject {
+  color:red;
+  background-color: darkred;
+  border: 2px dashed red;
+}
+
+.dropzone-accept {
+  color: green;
+  background-color: lightgreen;
+  border: 2px dashed green;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 45px;
+}
+
+.twitter-logo {
+  width: 35px;
+  height: 35px;
+}
+
+.footer-text {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.image-preview {
+  height: 500px;
+  margin-bottom: 80px;
+  justify-content: center;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-gap: 1.5rem;
+  justify-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.image-grid .image-item {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-self: center;
+  align-self: center;
+}
+
+.image-item img {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+
+
+.connected-container input[type='image'] {
+  display: inline-block;
+  color: white;
+  padding: 10px;
+  width: 50%;
+  height: 60px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.25);
+  border: none;
+  border-radius: 10px;
+  margin: 50px auto;
+}
+
+.connected-container button {
+  height: 50px;
 }
