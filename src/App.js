@@ -1,9 +1,10 @@
 // import dependencies
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
 import './App.css';
 
-// constants
+// ----- Constants ----------
 const TEST_GIFS = [
 	'https://i.giphy.com/media/eIG0HfouRQJQr1wBzz/giphy.webp',
 	'https://media3.giphy.com/media/L71a8LW2UrKwPaWNYM/giphy.gif?cid=ecf05e47rr9qizx2msjucl1xyvuu47d7kf25tqt2lvo024uo&rid=giphy.gif&ct=g',
@@ -11,13 +12,15 @@ const TEST_GIFS = [
 	'https://i.giphy.com/media/PAqjdPkJLDsmBRSYUp/giphy.webp'
 ];
 
+// Pixelate
 const pixelationFactor = 5;
+// Other
 const getPhantomWalletURL = 'https://phantom.app/';
 
 const App = () => {
   // ----- States ----------
   const [walletAddress, setWalletAddress] = useState(null);
-  const [pixelatedImageData, setPixelatedImageData] = useState(null);
+  const [pixelatedImageURL, setPixelatedImageURL] = useState(null);
 
   // ----- Actions ----------
   
@@ -60,13 +63,14 @@ const App = () => {
   const onDrop = useCallback((acceptedFiles) => {
     
     const imageFile = acceptedFiles[0];
+    console.log("Image file is: ", imageFile);
     const { type: mimeType } = imageFile;
 
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(imageFile);
-    fileReader.onload = (event) => {
+    const dropReader = new FileReader();
+    dropReader.readAsDataURL(imageFile);
+    dropReader.onload = (event) => {
       const imageAsBase64 = event.target.result;
-      console.log("Image read as: ", imageAsBase64);
+      console.log("Image as base64 is: ", imageAsBase64);
 
       const image = document.createElement('img');
       image.src = imageAsBase64;
@@ -97,13 +101,8 @@ const App = () => {
           }
         }
 
-        //setPixelatedImageData(canvas.toDataURL(mimeType));
-        canvas.toBlob(
-          blob => {
-            const url = URL.createObjectURL(blob);
-            setPixelatedImageData(url);
-          }
-        );
+        const pixImgURL = canvas.toDataURL("image/png");
+        setPixelatedImageURL(pixImgURL);
       }
     }
   }, []);
@@ -112,10 +111,8 @@ const App = () => {
   const {
     getRootProps,
     getInputProps,
-    isDragActive,
     isDragAccept,
     isDragReject,
-    rejectedFiles
   } = useDropzone({
     onDrop,
     multiple: false,
@@ -125,10 +122,22 @@ const App = () => {
   });
 
   // handle image upload
-  const uploadImage = () => {
-    console.log("User pressed the submit button")
-  }
-  
+  const uploadImage = async () => {
+    console.log("User pressed the submit button...");
+
+    const imageFile = new File([pixelatedImageURL], "file", {lastModified: Date.now()} );
+    console.log("File for upload is:", imageFile);
+    const data = new FormData();
+    data.append("file", imageFile);
+
+    axios.post(`${window.location.origin.toString()}/upload`, data, {})
+      .then((res) => {
+        console.log("File successfully uploaded to server:", res);
+      }).catch((error) => {
+        console.log("Error uploading file to server:", error);
+      });
+  };
+
   // ----- UI Renders ----------
   
   // render UI for when user doesn't have a Phantom wallet
@@ -149,9 +158,9 @@ const App = () => {
   const renderConnectedContainer = () => (
     <div className="connected-container">
       {
-        pixelatedImageData? (
+        pixelatedImageURL? (
           <div className="image-preview">
-            <img src={pixelatedImageData} style={{height: "80%"}}></img>
+            <img src={pixelatedImageURL} alt={"Preview of your pixelated image."} style={{height: "80%"}}></img>
             <div>
             <button className="cta-button submit-image-button" onClick={uploadImage}>
               Submit
@@ -196,7 +205,6 @@ const App = () => {
     window.addEventListener('load', onLoad); // wait for window to fully load before checking for solana object
   }, []);
 
-  
   // ----- Load App ----------
   return (
     <div className="App">
@@ -216,5 +224,4 @@ const App = () => {
   );
 };
   
-
 export default App;
