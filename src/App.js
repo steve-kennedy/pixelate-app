@@ -1,19 +1,30 @@
-// import dependencies
+// ----- Dependencies ----------
+// React app
 import React, { useEffect, useState, useCallback } from 'react';
+import './App.css';
+// File upload
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
-import { Buffer } from 'buffer';
-import './App.css';
+// Solana
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
+import { Program, Provider, web3 } from '@project-serum/anchor';
+import idl from './idl.json';
 
 // ----- Constants ----------
+// Test environment
 const TEST_GIFS = [
 	'https://i.giphy.com/media/eIG0HfouRQJQr1wBzz/giphy.webp',
 	'https://media3.giphy.com/media/L71a8LW2UrKwPaWNYM/giphy.gif?cid=ecf05e47rr9qizx2msjucl1xyvuu47d7kf25tqt2lvo024uo&rid=giphy.gif&ct=g',
 	'https://media4.giphy.com/media/AeFmQjHMtEySooOc8K/giphy.gif?cid=ecf05e47qdzhdma2y3ugn32lkgi972z9mpfzocjj6z1ro4ec&rid=giphy.gif&ct=g',
 	'https://i.giphy.com/media/PAqjdPkJLDsmBRSYUp/giphy.webp'
 ];
-
-// Pixelate
+// Solana configuration
+const { SystemProgram, Keypair } = web3;
+let baseAccount = Keypair.generate();
+const programID = new PublicKey(idl.metadata.address);
+const network = clusterApiUrl('devnet');
+const opts = { preflightCommitment: "finalized"};
+// Image configuration
 const pixelationFactor = 5;
 // Other
 const getPhantomWalletURL = 'https://phantom.app/';
@@ -23,6 +34,7 @@ const App = () => {
   const [phantomWalletExists, setPhantomWalletExists] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
   const [pixelatedImageURL, setPixelatedImageURL] = useState(null);
+  const [imageList, setImageList] = useState([]);
 
   // ----- Actions ----------
   
@@ -62,6 +74,15 @@ const App = () => {
     window.open(getPhantomWalletURL, '_blank').focus();
   };
   
+  // setup authenticated solana connection. requires connected wallet
+  const getProvider = () => {
+    const connection = new Connection(network, opts.preflightCommitment);
+    const provider = new Provider(
+      connection, window.solana, opts.preflightCommitment,
+    );
+    return provider;
+  };
+
   // handle file drop to Dropzone
   const onDrop = useCallback((acceptedFiles) => {
     
@@ -192,7 +213,7 @@ const App = () => {
 
       <div className="image-grid">
         
-        {TEST_GIFS.map(gif => (
+        {imageList.map((gif) => (
           <div className="image-item" key={gif}>
             <img src={gif} alt={gif} />
           </div>
@@ -203,13 +224,21 @@ const App = () => {
   
   // ----- Use Effects ----------
 
-  // on component mount, check for connected Phantom wallet
+  // check for connected Phantom wallet - must be once page fully loaded
   useEffect(() => {
     const onLoad = async () => {
       await checkForConnectedWallet();
     };
-    window.addEventListener('load', onLoad); // wait for window to fully load before checking for solana object
+    window.addEventListener('load', onLoad);
   }, []);
+  // get image list from Solana program
+  useEffect(() => {
+    if (walletAddress) {
+      console.log("Fetching image list...");
+
+      setImageList(TEST_GIFS);
+    }
+  }, [walletAddress]);
 
   // ----- Load App ----------
   return (
