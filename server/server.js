@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const app = express();
 const publicPath = path.join(__dirname, '..', "build");
+const keypair = require("./keypair.json");
 const port = process.env.PORT || 8001;
 app.use(express.static(publicPath));
 
@@ -76,7 +77,9 @@ app.post('/upload', (req, res) => {
   });
 });
 
-
+app.get('/keypair', (req, res) => {
+  res.send(keypair);
+})
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
