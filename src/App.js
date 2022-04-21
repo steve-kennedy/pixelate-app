@@ -20,7 +20,6 @@ const TEST_GIFS = [
 ];
 // Solana configuration
 const { SystemProgram, Keypair } = web3;
-let baseAccount = Keypair.generate();
 const programID = new PublicKey(idl.metadata.address);
 const network = clusterApiUrl('devnet');
 const opts = { preflightCommitment: "finalized"};
@@ -33,11 +32,29 @@ const App = () => {
   // ----- States ----------
   const [phantomWalletExists, setPhantomWalletExists] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
+  const [baseAccount, setBaseAccount] = useState(null);
   const [pixelatedImageURL, setPixelatedImageURL] = useState(null);
   const [imageList, setImageList] = useState([]);
 
   // ----- Actions ----------
-  
+  // get Solana base account keypair
+  const getBaseAccount = async () => {
+    console.log("Attempting to get base account...");
+    axios.get('/keypair')
+      .then((res) => {
+        console.log("Base account request completed:", res);
+        const kp = res.data;
+        const arr = Object.values(kp._keypair.secretKey);
+        const secret = new Uint8Array(arr);
+        const baseAccount = web3.Keypair.fromSecretKey(secret);
+        setBaseAccount(baseAccount);
+      }).catch((error) => {
+        console.log("Failed to get Base Account:", error);
+        setBaseAccount(null);
+        // TODO handle error
+      })
+  };
+
   // determine whether a Phatom wallet is connected
   const checkForConnectedWallet = async () => {
     try {
@@ -321,7 +338,14 @@ const App = () => {
   };
   
   // ----- Use Effects ----------
-
+  // request base account from server
+  useEffect(() => {
+    if (!baseAccount) {
+      console.log("Fetching base account...")
+      getBaseAccount();
+    }
+  }, []);
+  
   // check for connected Phantom wallet - must be once page fully loaded
   useEffect(() => {
     const onLoad = async () => {
@@ -329,13 +353,14 @@ const App = () => {
     };
     window.addEventListener('load', onLoad);
   }, []);
+
   // get image list from Solana program
   useEffect(() => {
-    if (walletAddress) {
+    if (walletAddress && baseAccount) {
       console.log("Fetching image list...");
       getImageList();
     }
-  }, [walletAddress]);
+  }, [walletAddress, baseAccount]);
 
   // ----- Load App ----------
   return (
