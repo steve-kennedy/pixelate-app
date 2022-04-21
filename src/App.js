@@ -16,10 +16,9 @@ const { SystemProgram, Keypair } = web3;
 const programID = new PublicKey(idl.metadata.address);
 const network = clusterApiUrl('devnet');
 const opts = { preflightCommitment: "finalized"};
-// Image configuration
-const pixelationFactor = 5;
 // Other
 const getPhantomWalletURL = 'https://phantom.app/';
+const IPFSGatewayURL = 'https://stevekennedy.mypinata.cloud/ipfs/';
 
 const App = () => {
   // ----- States ----------
@@ -152,6 +151,7 @@ const App = () => {
         canvas.width = width;
         canvas.height = height;
         console.log("Canvas dimensions are:", width, height);
+        const pixelationFactor = 10;
   
         const context = canvas.getContext('2d', { alpha: false });
         context.drawImage(image, 0, 0, width, height);
@@ -302,7 +302,8 @@ const App = () => {
           
           {imageList.map((item, index) => (
             <div className="image-item" key={index}>
-              <img src={`https://ipfs.io/ipfs/${item.imageCid}`} alt={""} />
+              <img src={`${IPFSGatewayURL + item.imageCid}`} alt={""}  />
+              {console.log("Image is:", index, item)}
             </div>
           ))}
         </div>
@@ -341,9 +342,11 @@ const App = () => {
     <div className="App">
       <div className={walletAddress ? 'authed-container' : 'container'}>
         <div className="header-container">
-          <p className="header">Pixelate</p>
+          <p className="header">
+            Pixelate
+          </p>
           <p className="sub-text">
-            Pixelate an image and store on Solana:
+            Turn your favorite images into pixel art:
           </p>
           {!walletAddress && renderNotConnectedContainer()}
           {walletAddress && renderConnectedContainer()}
