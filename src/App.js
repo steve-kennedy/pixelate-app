@@ -11,13 +11,6 @@ import { Program, Provider, web3 } from '@project-serum/anchor';
 import idl from './idl.json';
 
 // ----- Constants ----------
-// Test environment
-const TEST_GIFS = [
-	'https://i.giphy.com/media/eIG0HfouRQJQr1wBzz/giphy.webp',
-	'https://media3.giphy.com/media/L71a8LW2UrKwPaWNYM/giphy.gif?cid=ecf05e47rr9qizx2msjucl1xyvuu47d7kf25tqt2lvo024uo&rid=giphy.gif&ct=g',
-	'https://media4.giphy.com/media/AeFmQjHMtEySooOc8K/giphy.gif?cid=ecf05e47qdzhdma2y3ugn32lkgi972z9mpfzocjj6z1ro4ec&rid=giphy.gif&ct=g',
-	'https://i.giphy.com/media/PAqjdPkJLDsmBRSYUp/giphy.webp'
-];
 // Solana configuration
 const { SystemProgram, Keypair } = web3;
 const programID = new PublicKey(idl.metadata.address);
@@ -30,7 +23,6 @@ const getPhantomWalletURL = 'https://phantom.app/';
 
 const App = () => {
   // ----- States ----------
-  const [phantomWalletExists, setPhantomWalletExists] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
   const [baseAccount, setBaseAccount] = useState(null);
   const [pixelatedImageURL, setPixelatedImageURL] = useState(null);
@@ -62,7 +54,6 @@ const App = () => {
 
       if (solana) {
         if (solana.isPhantom) { // Phantom wallet found
-          setPhantomWalletExists(true);
           console.log('Phantom wallet found!');
           const response = await solana.connect({ onlyIfTrusted: true });
           console.log('Connected with public key:', response.publicKey.toString());
@@ -247,37 +238,20 @@ const App = () => {
   }
 
   // ----- UI Renders ----------
-  
-  /*
-  const loadImgURL = async (cid, mime) => {
-    if (cid === "" || cid === null || cid === undefined) {
-      return;
-    }
-    const ipfs = null;
-    for await (const file of ipfs.get(cid)) {
-      const content = [];
-      if (file.content) {
-        for await(const chunk of file.content) {
-          content.push(chunk);
-        }
-        return URL.createObjectURL(new Blob(content, {type: mime}));
-      }
-    }
-  }
-  */
-
-  // TODO render UI for when user doesn't have a Phantom wallet
-  const renderNoWalletContainer = () => (
-    <button className="cta-button get-wallet-button" onClick={getWallet}>
-      Get Phantom Wallet
-    </button>
-  );
-  
   // render UI for when user hasn't connected wallet yet
   const renderNotConnectedContainer = () => (
-    <button className="cta-button connect-wallet-button" onClick={connectWallet}>
-      Connect Phantom Wallet
-    </button>
+    <div className="header-container">
+      <div>
+        <button className="cta-button connect-wallet-button" onClick={connectWallet}>
+          Connect Phantom Wallet
+        </button>
+      </div>
+      <div>
+        <button className="cta-button get-wallet-button" onClick={getWallet}>
+          Get Phantom Wallet
+        </button>
+      </div>
+    </div>
   );
   
   // render UI for when user has connected wallet
