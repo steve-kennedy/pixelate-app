@@ -35,6 +35,7 @@ app.post('/upload', (req, res) => {
     }
     const filePath = req.file.path;
     console.log("File uploaded, with path:", filePath);
+    
     const readableStreamForFile = fs.createReadStream(filePath);
     const options = {
       pinataMetadata: {
@@ -46,6 +47,7 @@ app.post('/upload', (req, res) => {
     };
     pinata.pinFileToIPFS(readableStreamForFile, options).then((result) => {
       console.log("File pinned:", result);
+
       console.log("Attempting to remove local file...");
       fs.unlink(filePath, (error) => {
         if (error) {

@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import { Buffer } from 'buffer';
 import './App.css';
 
 // ----- Constants ----------
@@ -19,6 +20,7 @@ const getPhantomWalletURL = 'https://phantom.app/';
 
 const App = () => {
   // ----- States ----------
+  const [phantomWalletExists, setPhantomWalletExists] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
   const [pixelatedImageURL, setPixelatedImageURL] = useState(null);
 
@@ -31,6 +33,7 @@ const App = () => {
 
       if (solana) {
         if (solana.isPhantom) { // Phantom wallet found
+          setPhantomWalletExists(true);
           console.log('Phantom wallet found!');
           const response = await solana.connect({ onlyIfTrusted: true });
           console.log('Connected with public key:', response.publicKey.toString());
@@ -124,18 +127,21 @@ const App = () => {
   // handle image upload
   const uploadImage = async () => {
     console.log("User pressed the submit button...");
+    
+    const base64 = await fetch(pixelatedImageURL);
+    const blob = await base64.blob();
+    const imageFile = new File([blob], "file.png", {lastModified: Date.now(), type: "image/png"} );
 
-    const imageFile = new File([pixelatedImageURL], "file", {lastModified: Date.now()} );
-    console.log("File for upload is:", imageFile);
     const data = new FormData();
-    data.append("file", imageFile);
+    data.append("file", imageFile, "file.png");
+    console.log("File for upload is:", imageFile);
 
     axios.post(`${window.location.origin.toString()}/upload`, data, {})
       .then((res) => {
         console.log("File successfully uploaded to server:", res);
-      }).catch((error) => {
+    }).catch((error) => {
         console.log("Error uploading file to server:", error);
-      });
+    });
   };
 
   // ----- UI Renders ----------
@@ -214,7 +220,8 @@ const App = () => {
           <p className="sub-text">
             Pixelate an image and store on Solana:
           </p>
-          {!walletAddress && renderNotConnectedContainer()}
+          {!phantomWalletExists && renderNoWalletContainer()}
+          {(phantomWalletExists && !walletAddress) && renderNotConnectedContainer()}
           {walletAddress && renderConnectedContainer()}
         </div>
         <div className="footer-container">
