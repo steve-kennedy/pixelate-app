@@ -2,7 +2,7 @@
 // React app
 import React, { useEffect, useState, useCallback } from 'react';
 import './App.css';
-// File upload
+// File handling
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 // Solana
@@ -83,6 +83,43 @@ const App = () => {
     return provider;
   };
 
+  // initialize Solana base account
+  const createImageAccount = async() => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      console.log("Creating new image account...");
+      await program.rpc.startStuffOff({
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        },
+        signers: [baseAccount]
+      });
+      console.log("Created a new BaseAccount w/ address:", baseAccount.publicKey.toString());
+      await getImageList();
+
+    } catch (error) {
+      console.log("Error creating BaseAccount:", error);
+    };
+  };
+
+  // get images from Solana
+  const getImageList = async () => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+      const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+
+      console.log("Connected to base account:", account);
+      setImageList(account.imageList);
+    } catch (error) {
+      console.log("Error in fetching image list:", error);
+      setImageList(null);
+    };
+  };
+
   // handle file drop to Dropzone
   const onDrop = useCallback((acceptedFiles) => {
     
@@ -159,15 +196,60 @@ const App = () => {
 
     axios.post(`${window.location.origin.toString()}/upload`, data, {})
       .then((res) => {
-        console.log("File successfully uploaded to server:", res);
+        console.log("File sucessfully uploaded to IPFS server", res)
+
+        const cid = res.data;
+        console.log("Adding image to Solana with CID:", cid);
+        createImage(cid);
+    
     }).catch((error) => {
         console.log("Error uploading file to server:", error);
+        // TODO handle error
     });
   };
 
+  // send cid to Solana program and store image object
+  const createImage = async (cid) => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+
+      await program.rpc.addImage(cid, {
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+        },
+      });
+      console.log("Image successfully sent to Solana program", cid);
+      await getImageList();
+
+    } catch (error) {
+      console.log("Error sending image to Solana program:", error);
+      // TODO handle error
+    }
+  }
+
   // ----- UI Renders ----------
   
-  // render UI for when user doesn't have a Phantom wallet
+  /*
+  const loadImgURL = async (cid, mime) => {
+    if (cid === "" || cid === null || cid === undefined) {
+      return;
+    }
+    const ipfs = null;
+    for await (const file of ipfs.get(cid)) {
+      const content = [];
+      if (file.content) {
+        for await(const chunk of file.content) {
+          content.push(chunk);
+        }
+        return URL.createObjectURL(new Blob(content, {type: mime}));
+      }
+    }
+  }
+  */
+
+  // TODO render UI for when user doesn't have a Phantom wallet
   const renderNoWalletContainer = () => (
     <button className="cta-button get-wallet-button" onClick={getWallet}>
       Get Phantom Wallet
@@ -182,45 +264,61 @@ const App = () => {
   );
   
   // render UI for when user has connected wallet
-  const renderConnectedContainer = () => (
-    <div className="connected-container">
-      {
-        pixelatedImageURL? (
-          <div className="image-preview">
-            <img src={pixelatedImageURL} alt={"Preview of your pixelated image."} style={{height: "80%"}}></img>
-            <div>
-            <button className="cta-button submit-image-button" onClick={uploadImage}>
-              Submit
-            </button>
+  const renderConnectedContainer = () => {
+    // program account hasn't been initialized, display create account button
+    if (imageList === null) {
+      return (
+        <div className="connected-container">
+          <button className="cta-button submit-image-button" onClick={createImageAccount}>
+                One-Time Initialization for Image Program Account
+          </button>
+        </div>
+      )
+    } 
+    
+    // program account exists, display upload field and image list
+    else {
+      return(
+        <div className="connected-container">
+        {
+          pixelatedImageURL? (
+            <div className="image-preview">
+              <img src={pixelatedImageURL} alt={"Preview of your pixelated image."} style={{height: "80%"}}></img>
+              <div>
+              <button className="cta-button submit-image-button" onClick={uploadImage}>
+                Submit
+              </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div 
-            {...getRootProps({
-              className:`dropzone
-              ${isDragAccept && 'dropzone-accept'}
-              ${isDragReject && 'dropzone-reject'}`,
-            })}>
-          <input {...getInputProps()} />
-            { isDragReject? (
-              <p>Image files only!</p>
-            ) : (
-              <p>Drag and drop image to preview</p>
-            )}
-          </div>
-        )
-      }
-
-      <div className="image-grid">
-        
-        {imageList.map((gif) => (
-          <div className="image-item" key={gif}>
-            <img src={gif} alt={gif} />
-          </div>
-        ))}
+          ) : (
+            <div 
+              {...getRootProps({
+                className:`dropzone
+                ${isDragAccept && 'dropzone-accept'}
+                ${isDragReject && 'dropzone-reject'}`,
+              })}>
+            <input {...getInputProps()} />
+              { isDragReject? (
+                <p>Image files only!</p>
+              ) : (
+                <p>Drag and drop image to preview</p>
+              )}
+            </div>
+          )
+        }
+  
+        <div className="image-grid">
+          
+          {imageList.map((item, index) => (
+            <div className="image-item" key={index}>
+              <img src={`https://ipfs.io/ipfs/${item.imageCid}`} alt={""} />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+      )
+    }
+  };
   
   // ----- Use Effects ----------
 
@@ -235,8 +333,7 @@ const App = () => {
   useEffect(() => {
     if (walletAddress) {
       console.log("Fetching image list...");
-
-      setImageList(TEST_GIFS);
+      getImageList();
     }
   }, [walletAddress]);
 
@@ -249,8 +346,7 @@ const App = () => {
           <p className="sub-text">
             Pixelate an image and store on Solana:
           </p>
-          {!phantomWalletExists && renderNoWalletContainer()}
-          {(phantomWalletExists && !walletAddress) && renderNotConnectedContainer()}
+          {!walletAddress && renderNotConnectedContainer()}
           {walletAddress && renderConnectedContainer()}
         </div>
         <div className="footer-container">

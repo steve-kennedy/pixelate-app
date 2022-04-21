@@ -47,7 +47,7 @@ app.post('/upload', (req, res) => {
     };
     pinata.pinFileToIPFS(readableStreamForFile, options).then((result) => {
       console.log("File pinned:", result);
-
+      console.log("File hash is:", result.IpfsHash);
       console.log("Attempting to remove local file...");
       fs.unlink(filePath, (error) => {
         if (error) {
@@ -57,8 +57,20 @@ app.post('/upload', (req, res) => {
         }
       });
 
+      if (result.isDuplicate === true) {
+        console.log("Image is a duplicate on IPFS!");
+        res.send(result.IpfsHash);
+        
+      } else {
+        console.log("Sending IPFS hash to client:", result.IpfsHash);
+        res.send(result.IpfsHash);
+        // TODO handle duplicate images
+      }
+
     }).catch((error) => {
       console.log("Failed to pin:", error);
+      //TODO handle error
+
     });
     
   });
