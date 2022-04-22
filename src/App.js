@@ -8,7 +8,7 @@ import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 // Solana
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
-import { Program, Provider, web3 } from '@project-serum/anchor';
+import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 import idl from './idl.json';
 
 // ----- Constants ----------
@@ -87,7 +87,7 @@ const App = () => {
   // setup authenticated solana connection. requires connected wallet
   const getProvider = () => {
     const connection = new Connection(network, opts.preflightCommitment);
-    const provider = new Provider(
+    const provider = new AnchorProvider(
       connection, window.solana, opts.preflightCommitment,
     );
     return provider;
