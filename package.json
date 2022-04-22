@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@pinata/sdk": "^1.1.25",
+    "@solana/web3.js": "^1.39.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
