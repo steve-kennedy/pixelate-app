@@ -96,4 +96,3 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => console.log(`App listening at port: ${port}`));
-app.listen(pinataAPIKey, () => console.log(`Pinata API is: ${pinataAPIKey}`));
