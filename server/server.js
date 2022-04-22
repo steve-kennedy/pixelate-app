@@ -26,9 +26,21 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).single('file');
 
 // pinata configuration for final image storage
+const pinataAPIKey = process.env.PINATA_API_KEY;
+const pinataAPISecret = process.env.PINATA_API_SECRET;
 const pinataSDK = require('@pinata/sdk');
-const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
+const pinata = pinataSDK(pinataAPIKey, pinataAPISecret);
 const fs = require('fs');
+
+const removeFile = async (filePath) => {
+  fs.unlink(filePath, (error) => {
+    if (error) {
+      console.log("Failed to remove local file:", error);
+    } else {
+      console.log("Successfully removed local file");
+    }
+  });
+}
 
 // upload pixelated file from client to server
 app.post('/upload', (req, res) => {
@@ -53,14 +65,8 @@ app.post('/upload', (req, res) => {
     pinata.pinFileToIPFS(readableStreamForFile, options).then((result) => {
       console.log("File pinned:", result);
       console.log("File hash is:", result.IpfsHash);
-      console.log("Attempting to remove local file...");
-      fs.unlink(filePath, (error) => {
-        if (error) {
-          console.log("Failed to remove local file:", error);
-        } else {
-          console.log("Successfully removed local file");
-        }
-      });
+      console.log("Attempting to remove temporary file...");
+      removeFile(filePath);
 
       if (result.isDuplicate === true) {
         console.log("Image is a duplicate on IPFS!");
@@ -73,6 +79,8 @@ app.post('/upload', (req, res) => {
 
     }).catch((error) => {
       console.log("Failed to pin:", error);
+      console.log("Attempting to remove temporary file...")
+      removeFile(filePath);
       res.status(500).json(error);
     });
     
@@ -88,3 +96,4 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => console.log(`App listening at port: ${port}`));
+app.listen(pinataAPIKey, () => console.log(`Pinata API is: ${pinataAPIKey}`));
