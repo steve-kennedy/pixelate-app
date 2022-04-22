@@ -7,6 +7,10 @@ const keypair = require("./keypair.json");
 const port = process.env.PORT || 8001;
 app.use(express.static(publicPath));
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 // multer configuration for temporary image storage
 const cors = require('cors');
 app.use(cors());
@@ -23,7 +27,7 @@ const upload = multer({ storage: storage }).single('file');
 
 // pinata configuration for final image storage
 const pinataSDK = require('@pinata/sdk');
-const pinata = pinataSDK("a6a0a3d5ece75b3766b0", "40d293bbee825b43947d87a7a620c348e8cc16f4551515d63f6604d9e5eefeeb");
+const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET);
 const fs = require('fs');
 
 // upload pixelated file from client to server

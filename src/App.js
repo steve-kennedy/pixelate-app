@@ -191,7 +191,7 @@ const App = () => {
     multiple: false,
     minSize: 0,
     maxSize: 5245880,
-    accept: 'image/*'
+    accept: 'image/*, image/jpeg, image/png'
   });
 
   // handle image upload
