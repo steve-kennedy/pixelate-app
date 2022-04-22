@@ -10,7 +10,7 @@
 
 # production
 /build
-/server/keypair.json
+# /server/keypair.json
 
 # misc
 .DS_Store
