@@ -20,9 +20,9 @@
   padding: 30px;
 }
 
-.header {
+.header-text {
   margin: 0;
-  font-size: 48px;
+  font-size: 96px;
   font-family: "PublicPixel";
   color: white;
 }
@@ -30,6 +30,24 @@
 .sub-text {
   font-size: 25px;
   color: white;
+}
+
+.image-header-text {
+  font-size: 48px;
+  font-family: "PublicPixel";
+  color: white;
+}
+
+.success-text {
+  font-size: 36px;
+  font-weight: bold;
+  color: greenyellow;
+}
+
+.failure-text {
+  font-size: 36px;
+  font-weight: bold;
+  color: orangered;
 }
 
 .gradient-text {
@@ -42,7 +60,7 @@
 .cta-button {
   height: 45px;
   border: 0;
-  width: auto;
+  width: 300px;
   padding-left: 40px;
   padding-right: 40px;
   margin: 20px;
@@ -57,14 +75,12 @@
   background: -webkit-linear-gradient(left, #60c657, #35aee2);
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
-  width: 300px;
 }
 
 .get-wallet-button {
   background: -webkit-linear-gradient(left, #4e44ce, #1a202c);
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
-  width: 300px;
 }
 
 .submit-image-button {
@@ -152,8 +168,6 @@
   object-fit: cover;
 }
 
-
-
 .connected-container input[type='image'] {
   display: inline-block;
   color: white;
@@ -170,4 +184,35 @@
 
 .connected-container button {
   height: 50px;
+}
+
+.dot-loader {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -14px;
+}
+
+.dot-loader div {
+  width: 12px;
+  height: 12px;
+  margin: 3px 6px;
+  border-radius: 50%;
+  background-color: whitesmoke;
+  opacity: 1;
+  animation: dot-loader 0.6s infinite alternate;
+}
+
+@keyframes dot-loader {
+  to {
+    opacity: 0.1;
+    transform: translateY(-12px);
+  }
+}
+
+.dot-loader div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot-loader div:nth-child(3) {
+  animation-delay: 0.4s;
 }

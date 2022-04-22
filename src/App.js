@@ -1,6 +1,7 @@
 // ----- Dependencies ----------
 // React app
 import React, { useEffect, useState, useCallback } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 // File handling
 import { useDropzone } from 'react-dropzone';
@@ -26,6 +27,9 @@ const App = () => {
   const [baseAccount, setBaseAccount] = useState(null);
   const [pixelatedImageURL, setPixelatedImageURL] = useState(null);
   const [imageList, setImageList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [failure, setFailure] = useState(false);
 
   // ----- Actions ----------
   // get Solana base account keypair
@@ -42,7 +46,6 @@ const App = () => {
       }).catch((error) => {
         console.log("Failed to get Base Account:", error);
         setBaseAccount(null);
-        // TODO handle error
       })
   };
 
@@ -129,6 +132,7 @@ const App = () => {
 
   // handle file drop to Dropzone
   const onDrop = useCallback((acceptedFiles) => {
+    resetStates();
     
     const imageFile = acceptedFiles[0];
     console.log("Image file is: ", imageFile);
@@ -193,6 +197,7 @@ const App = () => {
   // handle image upload
   const uploadImage = async () => {
     console.log("User pressed the submit button...");
+    setLoading(true);
     
     const base64 = await fetch(pixelatedImageURL);
     const blob = await base64.blob();
@@ -209,10 +214,10 @@ const App = () => {
         const cid = res.data;
         console.log("Adding image to Solana with CID:", cid);
         createImage(cid);
-    
+  
     }).catch((error) => {
         console.log("Error uploading file to server:", error);
-        // TODO handle error
+        uploadFailure();
     });
   };
 
@@ -230,14 +235,66 @@ const App = () => {
       });
       console.log("Image successfully sent to Solana program", cid);
       await getImageList();
+      await uploadSuccess();
 
     } catch (error) {
       console.log("Error sending image to Solana program:", error);
-      // TODO handle error
+      await uploadFailure();
     }
   }
 
+  // image upload success, reset states
+  const uploadSuccess = async () => {
+    setSuccess(true);
+    setFailure(false);
+
+    setLoading(false);
+    setPixelatedImageURL(null);
+  }
+
+  // image upload failure, reset states
+  const uploadFailure = async () => {
+    setSuccess(false);
+    setFailure(true);
+
+    setLoading(false);
+    setPixelatedImageURL(null);
+  }
+
+  // reset states
+  const resetStates = async () => {
+    setSuccess(false);
+    setFailure(false);
+    setLoading(false);
+    setPixelatedImageURL(null);
+  }
+
   // ----- UI Renders ----------
+  // bouncing dots loader
+  const dotLoader = () => {
+    return (
+      <div className="dot-loader">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    );
+  };
+
+  // render success message
+  const renderUploadSuccess = () => (
+    <p className="success-text">
+      Image pixelated successfully!
+    </p>
+  );
+
+  // render failure message
+  const renderUploadFailure = () => (
+    <p className="failure-text">
+      Image pixelation failed! Please try again.
+    </p>
+  );
+
   // render UI for when user hasn't connected wallet yet
   const renderNotConnectedContainer = () => (
     <div className="header-container">
@@ -271,13 +328,20 @@ const App = () => {
     else {
       return(
         <div className="connected-container">
+        { success && renderUploadSuccess()}
+        { failure && renderUploadFailure()}
+        
         {
           pixelatedImageURL? (
             <div className="image-preview">
               <img src={pixelatedImageURL} alt={"Preview of your pixelated image."} style={{height: "80%"}}></img>
               <div>
               <button className="cta-button submit-image-button" onClick={uploadImage}>
-                Submit
+                { loading? (
+                  dotLoader()
+                ) : (
+                  "Submit"
+                )}
               </button>
               </div>
             </div>
@@ -297,10 +361,15 @@ const App = () => {
             </div>
           )
         }
-  
+
+        <div className="authed-container">
+          <p className="image-header-text">
+            Latest Pixels
+          </p>
+        </div>
+
         <div className="image-grid">
-          
-          {imageList.map((item, index) => (
+          {imageList.slice(0).reverse().map((item, index) => (
             <div className="image-item" key={index}>
               <img src={`${IPFSGatewayURL + item.imageCid}`} alt={""}  />
               {console.log("Image is:", index, item)}
@@ -342,7 +411,7 @@ const App = () => {
     <div className="App">
       <div className={walletAddress ? 'authed-container' : 'container'}>
         <div className="header-container">
-          <p className="header">
+          <p className="header-text">
             Pixelate
           </p>
           <p className="sub-text">

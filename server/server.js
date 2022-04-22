@@ -40,9 +40,9 @@ app.post('/upload', (req, res) => {
     const readableStreamForFile = fs.createReadStream(filePath);
     const options = {
       pinataMetadata: {
-        name: "Test Name",
+        name: "Pixelate",
         keyvalues: {
-          description: "Test description"
+          description: "Image pixelated via the Pixelate App @https://stevekennedy.io/pixelate"
         }
       }
     };
@@ -65,13 +65,11 @@ app.post('/upload', (req, res) => {
       } else {
         console.log("Sending IPFS hash to client:", result.IpfsHash);
         res.send(result.IpfsHash);
-        // TODO handle duplicate images
       }
 
     }).catch((error) => {
       console.log("Failed to pin:", error);
-      //TODO handle error
-
+      res.status(500).json(error);
     });
     
   });
