@@ -11,6 +11,15 @@
 # production
 /build
 /server/keypair.json
+/ssl
+
+# solana
+solana/.anchor
+solana/.DS_Store
+solana/target
+solana/**/*.rs.bk
+solana/node_modules
+solana/test-ledger
 
 # misc
 .DS_Store

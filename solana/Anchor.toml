@@ -1,0 +1,14 @@
+[features]
+seeds = false
+[programs.devnet]
+pixelate = "UCmh4ueqZ8HDQNdHQVLz6hjy5bjz7TmQzCZMLmLhes5"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "devnet"
+wallet = "/Users/skennedy/.config/solana/id.json"
+
+[scripts]
+test = "node tests/pixelate.js"
