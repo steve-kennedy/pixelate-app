@@ -1,3 +1,5 @@
+// run in terminal to generate required keypair.json file for use by server
+
 const fs = require('fs');
 const anchor = require("@project-serum/anchor");
 

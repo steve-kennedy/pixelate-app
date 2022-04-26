@@ -16,7 +16,7 @@ pub mod pixelate {
       let user = &mut ctx.accounts.user;
 
       let item = ItemStruct {
-          mint_number: base_account.total_images + 1,
+          item_number: base_account.total_images + 1,
           image_cid: image_cid.to_string(),
           user_address: *user.to_account_info().key,
       };
@@ -47,7 +47,7 @@ pub struct AddImage<'info> {
 
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
 pub struct ItemStruct {
-    pub mint_number: u64,
+    pub item_number: u64,
     pub image_cid: String,
     pub user_address: Pubkey,
 }

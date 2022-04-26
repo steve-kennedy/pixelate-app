@@ -1,95 +1,95 @@
 {
-    "version": "0.1.0",
-    "name": "pixelate",
-    "instructions": [
-      {
-        "name": "startStuffOff",
-        "accounts": [
+  "version": "0.1.0",
+  "name": "pixelate",
+  "instructions": [
+    {
+      "name": "startStuffOff",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "addImage",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "imageCid",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "BaseAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            "name": "baseAccount",
-            "isMut": true,
-            "isSigner": true
+            "name": "totalImages",
+            "type": "u64"
           },
           {
-            "name": "user",
-            "isMut": true,
-            "isSigner": true
-          },
-          {
-            "name": "systemProgram",
-            "isMut": false,
-            "isSigner": false
-          }
-        ],
-        "args": []
-      },
-      {
-        "name": "addImage",
-        "accounts": [
-          {
-            "name": "baseAccount",
-            "isMut": true,
-            "isSigner": false
-          },
-          {
-            "name": "user",
-            "isMut": true,
-            "isSigner": true
-          }
-        ],
-        "args": [
-          {
-            "name": "imageCid",
-            "type": "string"
+            "name": "imageList",
+            "type": {
+              "vec": {
+                "defined": "ItemStruct"
+              }
+            }
           }
         ]
       }
-    ],
-    "accounts": [
-      {
-        "name": "BaseAccount",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "totalImages",
-              "type": "u64"
-            },
-            {
-              "name": "imageList",
-              "type": {
-                "vec": {
-                  "defined": "ItemStruct"
-                }
-              }
-            }
-          ]
-        }
-      }
-    ],
-    "types": [
-      {
-        "name": "ItemStruct",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "mintNumber",
-              "type": "u64"
-            },
-            {
-              "name": "imageCid",
-              "type": "string"
-            },
-            {
-              "name": "userAddress",
-              "type": "publicKey"
-            }
-          ]
-        }
-      }
-    ],
-    "metadata": {
-      "address": "UCmh4ueqZ8HDQNdHQVLz6hjy5bjz7TmQzCZMLmLhes5"
     }
+  ],
+  "types": [
+    {
+      "name": "ItemStruct",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "itemNumber",
+            "type": "u64"
+          },
+          {
+            "name": "imageCid",
+            "type": "string"
+          },
+          {
+            "name": "userAddress",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "UCmh4ueqZ8HDQNdHQVLz6hjy5bjz7TmQzCZMLmLhes5"
   }
+}
