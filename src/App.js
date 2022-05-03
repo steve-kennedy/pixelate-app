@@ -1,6 +1,7 @@
 // ----- Dependencies ----------
 // React app
 import React, { useEffect, useState, useCallback } from 'react';
+import { isChrome } from 'react-device-detect';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 // File handling
@@ -30,6 +31,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
+  const isMacChrome = isChrome && (window.navigator.platform.indexOf('Mac') !== -1) ;
 
   // ----- Actions ----------
   // get Solana base account keypair
@@ -191,7 +193,7 @@ const App = () => {
     multiple: false,
     minSize: 0,
     maxSize: 5245880,
-    accept: 'image/*, image/jpeg, image/png'
+    accept: 'image/jpeg, image/jpg, image/png, .jpeg, .jpg, .png'
   });
 
   // handle image upload
@@ -350,11 +352,11 @@ const App = () => {
               {...getRootProps({
                 className:`dropzone
                 ${isDragAccept && 'dropzone-accept'}
-                ${isDragReject && 'dropzone-reject'}`,
+                ${isDragReject && !isMacChrome && 'dropzone-reject'}`,
               })}>
             <input {...getInputProps()} />
-              { isDragReject? (
-                <p>Image files only!</p>
+              { (isDragReject && !isMacChrome) ? (
+                <p>png and jpg files only!</p>
               ) : (
                 <p>Drag and drop image to preview</p>
               )}
