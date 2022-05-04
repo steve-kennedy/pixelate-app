@@ -274,7 +274,7 @@ const App = () => {
   // render failure message
   const renderUploadFailure = () => (
     <p className="failure-text">
-      Image pixelation failed! Please try again.
+      Image pixelation failed! Please refresh the page and try again.
     </p>
   );
 
@@ -300,8 +300,8 @@ const App = () => {
     if (imageList === null) {
       return (
         <div className="connected-container">
-          <p>
-            Oops! We've run into a problem connecting with Solana. Please refresh the page or try again later.
+          <p className="failure-text">
+            Oops! We've run into a problem connecting with the Solana devnet. Please refresh the page or try again later.
           </p>
         </div>
       )
