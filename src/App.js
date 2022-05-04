@@ -16,7 +16,6 @@ import idl from './idl.json';
 
 // ----- Constants ----------
 // Solana configuration
-const { SystemProgram, Keypair } = web3;
 const programID = new PublicKey(idl.metadata.address);
 const network = clusterApiUrl('devnet');
 const opts = { preflightCommitment: "finalized"};
@@ -120,7 +119,6 @@ const App = () => {
     
     const imageFile = acceptedFiles[0];
     console.log("Image file is: ", imageFile);
-    const { type: mimeType } = imageFile;
 
     const dropReader = new FileReader();
     dropReader.readAsDataURL(imageFile);
