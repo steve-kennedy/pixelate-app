@@ -407,11 +407,11 @@ const App = () => {
           <div className="author-container">
             <p className="author-text">Built by Steve Kennedy</p>
             <div className="author-logo-container">
-              <a href={TWITTER_LINK}>
-                <img alt="Twitter Logo" className="author-logo" src={twitterImg} target="_blank"/>
+              <a href={TWITTER_LINK} target="_blank" rel="noreferrer">
+                <img alt="Twitter Logo" className="author-logo" src={twitterImg} />
               </a>
-              <a href={WEBSITE_LINK}>
-                <img alt="Website Logo" className="author-logo" src={webImg} target="_blank"/>
+              <a href={WEBSITE_LINK} target="_blank" rel="noreferrer">
+                <img alt="Website Logo" className="author-logo" src={webImg} />
               </a>
             </div>
           </div>
