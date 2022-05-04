@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { isChrome } from 'react-device-detect';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import twitterImg from './twitter-logo.svg';
+import webImg from './website-logo.png';
 // File handling
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
@@ -21,6 +23,8 @@ const opts = { preflightCommitment: "finalized"};
 // Other
 const getPhantomWalletURL = 'https://phantom.app/';
 const IPFSGatewayURL = 'https://stevekennedy.mypinata.cloud/ipfs/';
+const TWITTER_LINK = 'https://twitter.com/struikeny'
+const WEBSITE_LINK = 'https://stevekennedy.io'
 
 const App = () => {
   // ----- States ----------
@@ -93,28 +97,6 @@ const App = () => {
       connection, window.solana, opts.preflightCommitment,
     );
     return provider;
-  };
-
-  // initialize Solana base account
-  const createImageAccount = async() => {
-    try {
-      const provider = getProvider();
-      const program = new Program(idl, programID, provider);
-      console.log("Creating new image account...");
-      await program.rpc.startStuffOff({
-        accounts: {
-          baseAccount: baseAccount.publicKey,
-          user: provider.wallet.publicKey,
-          systemProgram: SystemProgram.programId,
-        },
-        signers: [baseAccount]
-      });
-      console.log("Created a new BaseAccount w/ address:", baseAccount.publicKey.toString());
-      await getImageList();
-
-    } catch (error) {
-      console.log("Error creating BaseAccount:", error);
-    };
   };
 
   // get images from Solana
@@ -271,24 +253,6 @@ const App = () => {
     setPixelatedImageURL(null);
   }
 
-  // admin function to remove all images if required
-  const resetImages = async () => {
-    try {
-      const provider = getProvider();
-      const program = new Program(idl, programID, provider);
-
-      await program.rpc.resetImages({
-        accounts: {
-          baseAccount: baseAccount.publicKey,
-          user: provider.wallet.publicKey,
-        },
-      });
-      console.log("All images successfully removed from Solana program");
-    } catch (error) {
-      console.log("Error removing all images from Solana program", error);
-    }
-  };
-
   // ----- UI Renders ----------
 
   // bouncing dots loader
@@ -334,18 +298,18 @@ const App = () => {
   
   // render UI for when user has connected wallet
   const renderConnectedContainer = () => {
-    // program account hasn't been initialized, display create account button
+    // issue connecting to Solana program
     if (imageList === null) {
       return (
         <div className="connected-container">
-          <button className="cta-button submit-image-button" onClick={createImageAccount}>
-                One-Time Initialization for Image Program Account
-          </button>
+          <p>
+            Oops! We've run into a problem connecting with Solana. Please refresh the page or try again later.
+          </p>
         </div>
       )
     } 
     
-    // program account exists, display upload field and image list
+    // program account connected, display upload field and image list
     else {
       return(
         <div className="connected-container">
@@ -355,7 +319,7 @@ const App = () => {
         {
           pixelatedImageURL? (
             <div className="image-preview">
-              <img src={pixelatedImageURL} alt={"Preview of your pixelated image."} style={{height: "80%"}}></img>
+              <img src={pixelatedImageURL} alt={"Preview of your new pixel."} style={{height: "80%"}}></img>
               <div>
               <button className="cta-button submit-image-button" onClick={uploadImage}>
                 { loading? (
@@ -435,13 +399,25 @@ const App = () => {
           <p className="header-text">
             Pixelate
           </p>
+  
           <p className="sub-text">
             Turn your favorite images into pixel art:
           </p>
           {!walletAddress && renderNotConnectedContainer()}
           {walletAddress && renderConnectedContainer()}
-        </div>
-        <div className="footer-container">
+
+          <div className="author-container">
+            <p className="author-text">Built by Steve Kennedy</p>
+            <div className="author-logo-container">
+              <a href={TWITTER_LINK}>
+                <img alt="Twitter Logo" className="author-logo" src={twitterImg}/>
+              </a>
+              <a href={WEBSITE_LINK}>
+                <img alt="Website Logo" className="author-logo" src={webImg}/>
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
