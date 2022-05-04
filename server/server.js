@@ -58,7 +58,7 @@ app.post('/upload', (req, res) => {
       pinataMetadata: {
         name: "Pixelate",
         keyvalues: {
-          description: "Image pixelated via the Pixelate App @https://stevekennedy.io/pixelate"
+          description: "Image pixelated via the Pixelate App https://pixelate.stevekennedy.io/"
         }
       }
     };

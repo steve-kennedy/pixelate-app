@@ -271,7 +271,33 @@ const App = () => {
     setPixelatedImageURL(null);
   }
 
+  // admin function to remove all images if required
+  const resetImages = async () => {
+    try {
+      const provider = getProvider();
+      const program = new Program(idl, programID, provider);
+
+      await program.rpc.resetImages({
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+        },
+      });
+      console.log("All images successfully removed from Solana program");
+    } catch {
+      console.log("Error removing all images from Solana program");
+    }
+  };
+
   // ----- UI Renders ----------
+
+  // admin button for removing all images
+  const renderResetButton = () => {
+    <button className="cta-button" onClick={resetImages}>
+      RESET ALL IMAGES
+    </button>
+  }
+
   // bouncing dots loader
   const dotLoader = () => {
     return (
@@ -330,6 +356,7 @@ const App = () => {
     else {
       return(
         <div className="connected-container">
+        { renderResetButton() }
         { success && renderUploadSuccess()}
         { failure && renderUploadFailure()}
         
