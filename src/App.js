@@ -291,13 +291,6 @@ const App = () => {
 
   // ----- UI Renders ----------
 
-  // admin button for removing all images
-  const renderResetButton = () => {
-    <button className="cta-button" onClick={resetImages}>
-      RESET ALL IMAGES
-    </button>
-  }
-
   // bouncing dots loader
   const dotLoader = () => {
     return (
@@ -356,7 +349,6 @@ const App = () => {
     else {
       return(
         <div className="connected-container">
-        { renderResetButton() }
         { success && renderUploadSuccess()}
         { failure && renderUploadFailure()}
         
@@ -395,6 +387,9 @@ const App = () => {
           <p className="image-header-text">
             Latest Pixels
           </p>
+          <button className="cta-button submit-image-button" onClick={resetImages}>
+            RESET ALL IMAGES
+          </button>
         </div>
 
         <div className="image-grid">
