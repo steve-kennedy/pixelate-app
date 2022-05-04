@@ -28,7 +28,9 @@ const main = async() => {
   // fetch data from the base account
   let account = await program.account.baseAccount.fetch(baseAccount.publicKey);
   console.log('Image count:', account.totalImages.toString());
+  console.log('Image list:', account.imageList);
 
+  console.log("Adding image...");
   // call add_image function
   await program.rpc.addImage("QmX2osZ8n26X8cbKbcfKxPeYK2AeAN2NTQCbCm8QzKv6YL", {
     accounts: {
@@ -37,7 +39,53 @@ const main = async() => {
     },
   });
 
-  // get the account again to see changes
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('Image count:', account.totalImages.toString());
+  console.log('Image list:', account.imageList);
+
+  console.log("Adding image...");
+  await program.rpc.addImage("QmTVjqJ5GDTq1HJvbqenwz3PSsSoKVPgftcwX9fao6FPGj", {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('Image count:', account.totalImages.toString());
+  console.log('Image list:', account.imageList);
+
+  console.log("Removing image...");
+  await program.rpc.removeImage("QmTVjqJ5GDTq1HJvbqenwz3PSsSoKVPgftcwX9fao6FPGj", {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+    },
+  });
+
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('Image count:', account.totalImages.toString());
+  console.log('Image list:', account.imageList);
+
+  console.log("Adding image...");
+  await program.rpc.addImage("QmTVjqJ5GDTq1HJvbqenwz3PSsSoKVPgftcwX9fao6FPGj", {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('Image count:', account.totalImages.toString());
+  console.log('Image list:', account.imageList);
+
+  console.log("Resetting all images...");
+  await program.rpc.resetImages({
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
   account = await program.account.baseAccount.fetch(baseAccount.publicKey);
   console.log('Image count:', account.totalImages.toString());
   console.log('Image list:', account.imageList);

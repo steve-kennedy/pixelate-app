@@ -11,7 +11,7 @@ pub mod pixelate {
     Ok(())
   }
 
-  pub fn add_image(ctx: Context<AddImage>, image_cid: String) -> Result <()> {
+  pub fn add_image(ctx: Context<AddImage>, image_cid: String) -> Result < String > {
       let base_account = &mut ctx.accounts.base_account;
       let user = &mut ctx.accounts.user;
 
@@ -23,6 +23,29 @@ pub mod pixelate {
 
       base_account.image_list.push(item);
       base_account.total_images += 1;
+      Ok(image_cid.to_string())
+  }
+
+  pub fn remove_image(ctx: Context<RemoveImage>, image_cid: String) -> Result < String > {
+    let base_account = &mut ctx.accounts.base_account;
+    let images = &mut base_account.image_list;
+
+    let index = images.iter().position(| ItemStruct{item_number: _, image_cid, user_address: _} | image_cid == image_cid);
+    match index {
+        Some(i) => {
+            images.remove(i);
+            base_account.total_images -= 1;
+        },
+        None => {}
+    }
+    Ok(image_cid.to_string())
+  }
+
+  pub fn reset_images(ctx: Context<ResetImages>) -> Result < () > {
+      let base_account = &mut ctx.accounts.base_account;
+
+      base_account.image_list = vec![];
+      base_account.total_images = 0;
       Ok(())
   }
 
@@ -43,6 +66,18 @@ pub struct AddImage<'info> {
     pub base_account: Account<'info, BaseAccount>,
     #[account(mut)]
     pub user: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct RemoveImage<'info> {
+    #[account(mut)]
+    pub base_account: Account<'info, BaseAccount>,
+}
+
+#[derive(Accounts)]
+pub struct ResetImages<'info> {
+    #[account(mut)]
+    pub base_account: Account<'info, BaseAccount>,
 }
 
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
