@@ -284,8 +284,8 @@ const App = () => {
         },
       });
       console.log("All images successfully removed from Solana program");
-    } catch {
-      console.log("Error removing all images from Solana program");
+    } catch (error) {
+      console.log("Error removing all images from Solana program", error);
     }
   };
 
@@ -387,9 +387,6 @@ const App = () => {
           <p className="image-header-text">
             Latest Pixels
           </p>
-          <button className="cta-button submit-image-button" onClick={resetImages}>
-            RESET ALL IMAGES
-          </button>
         </div>
 
         <div className="image-grid">

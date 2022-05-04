@@ -42,7 +42,36 @@
           "name": "imageCid",
           "type": "string"
         }
-      ]
+      ],
+      "returns": "string"
+    },
+    {
+      "name": "removeImage",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "imageCid",
+          "type": "string"
+        }
+      ],
+      "returns": "string"
+    },
+    {
+      "name": "resetImages",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
