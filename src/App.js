@@ -408,10 +408,10 @@ const App = () => {
             <p className="author-text">Built by Steve Kennedy</p>
             <div className="author-logo-container">
               <a href={TWITTER_LINK}>
-                <img alt="Twitter Logo" className="author-logo" src={twitterImg}/>
+                <img alt="Twitter Logo" className="author-logo" src={twitterImg} target="_blank"/>
               </a>
               <a href={WEBSITE_LINK}>
-                <img alt="Website Logo" className="author-logo" src={webImg}/>
+                <img alt="Website Logo" className="author-logo" src={webImg} target="_blank"/>
               </a>
             </div>
           </div>
