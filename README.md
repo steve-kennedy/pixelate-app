@@ -6,3 +6,5 @@ The web app takes a user submitted image, generates a lower-resolution pixelated
 The frontend is built with React, the backend server with NodeJS, and the database is a Solana program written in Rust.
 
 The app can be seen at http://pixelate.stevekennedy.io.
+
+Based on a project from buildspace - check them out at https://buildspace.so/. 
